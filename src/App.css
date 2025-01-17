@@ -1,0 +1,109 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+* {
+  font-family: sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+
+}
+
+main {
+  display: flex;
+  text-align: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin-top: 20px;
+
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgb(128, 125, 125);
+  background-color: azure;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+h2 span {
+color: black;
+  font-size: 1.5rem;
+}
+
+.reset {
+  font-size: 1em;
+  font-weight: 600;
+  width: fit-content;
+  background-color: darkcyan;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 2px;
+  margin-top: 20px;
+
+}
+.reset-game{
+  margin-top: 10px;
+  color:#14BDAC ;
+  cursor: pointer;
+}
+.flex{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+
+}
+.scores{
+  display: grid;
+  grid-template-columns: repeat(2,30px);
+  
+
+}
+.scr-rst{
+  font-size: 0.85rem;
+  padding: 5px;
+
+}
+.green{
+  color: rgb(9, 196, 81);
+}
+.red{
+  color: rgb(231, 51, 51);
+}
+@media only screen and (max-width:500px){
+  main {
+    display: flex;
+    flex-direction:  column-reverse;
+    text-align: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+  
+  }
+}
