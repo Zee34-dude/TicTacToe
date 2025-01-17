@@ -133,8 +133,8 @@ function TicTacToe() {
     for (const [a, b, c] of winningCombinations
     ) {
       if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
-      if (gameArr[b] == computer && gameArr[c] == computer && gameArr[a] == '') return 
-      if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
+      if (gameArr[b] == computer && gameArr[c] == computer && gameArr[a] == '') return a
+      if (gameArr[a] == computer && gameArr[c] == computer && gameArr[b] == '') return b
 
     }
     for(const [a,b,c] of winningCombinations){
