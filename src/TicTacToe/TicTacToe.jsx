@@ -49,13 +49,15 @@ function TicTacToe() {
     checkWinner(gameArr);
   }, [gameArr])
   useEffect(() => {
+    if(winner) return
+    if (winner === null && count > 0) {
+    console.log(winner, count )
 
-    if (!winner && count > 0) {
       setTimeout(() => {
        playComputer&&ComputerMove();
       }, 500); // Delay for the computer's move
     }
-
+   
   }, [count, winner])
 
 
@@ -85,7 +87,7 @@ function TicTacToe() {
       }
     }
   }
-
+console.log(winner, "winner-game")
   const resetGame = () => {
     setWinner(null)
     setGameArr(generateAllButton)
@@ -115,26 +117,30 @@ function TicTacToe() {
   }
 
   function ComputerMove() {
-    const emptySpaces = gameArr.map((space, index) => space == '' ? index : null).filter(space => space !== null);
-    const randomNo = Math.floor(Math.random() * emptySpaces.length)
-    if (emptySpaces.length === 0) return;
-    const randomIndex = emptySpaces[randomNo];
-   const ComputerMove= getbestMove(gameArr, 'X', computer,randomIndex)
-
-    const newArr = [...gameArr]
-    console.log(newArr)
-    newArr[ComputerMove] = 'O'
-    setGameArr(newArr)
+    if(winner) return;
+    else {
+      const emptySpaces = gameArr.map((space, index) => space == '' ? index : null).filter(space => space !== null);
+      const randomNo = Math.floor(Math.random() * emptySpaces.length)
+      if (emptySpaces.length === 0) return;
+      const randomIndex = emptySpaces[randomNo];
+     const ComputerMove= getbestMove(gameArr, 'X', computer,randomIndex)
+  
+      const newArr = [...gameArr]
+      console.log(newArr)
+      newArr[ComputerMove] = 'O'
+      setGameArr(newArr)
+    }
+  
 
   }
-  console.log(count)
+
   function getbestMove(gameArr, opponent, computer,randomIndex) {
     //if computer is about to win
     for (const [a, b, c] of winningCombinations
     ) {
-      if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
       if (gameArr[b] == computer && gameArr[c] == computer && gameArr[a] == '') return a
       if (gameArr[a] == computer && gameArr[c] == computer && gameArr[b] == '') return b
+      if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
 
     }
     for(const [a,b,c] of winningCombinations){
