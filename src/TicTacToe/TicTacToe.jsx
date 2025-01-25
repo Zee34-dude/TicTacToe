@@ -50,13 +50,14 @@ export function TicTacToe() {
   }, [gameArr])
 
   //Player move
-  function changePlayer(index) {
-    setCount(count + 1)
+  function changePlayer(index) { 
     if (winner || gameArr[index]) return;
     const newArr = [...gameArr]
     newArr[index] = playComputer ? 'X' : player
     setGameArr(newArr)
     setPlayer(player == 'X' ? 'O' : 'X')
+    setCount(count + 1)
+   
   }
 
   //Computer move
