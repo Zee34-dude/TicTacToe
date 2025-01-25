@@ -1,66 +1,19 @@
 import { useState, useEffect } from 'react'
 import '../App.css'
 import Buttons from './Buttons'
-import { nanoid } from 'nanoid'
 import Confetti from "react-confetti"
 import clsx from 'clsx'
-function TicTacToe() {
+
+export function TicTacToe() {
   const [player, setPlayer] = useState('X')
-  const [gameArr, setGameArr] = useState(generateAllButton)
+  const [gameArr, setGameArr] = useState(new Array(9).fill(''))
   const [winner, setWinner] = useState(null)
-  const [computer, setComputer] = useState('O')
   const [count, setCount] = useState(0)
-  const [playComputer,setPlayComputer]=useState(true)
+  const [playComputer, setPlayComputer] = useState(true)
   const [score, setScore] = useState(JSON.parse(localStorage.getItem('score')) || {
     x: 0,
     o: 0,
   });
-  console.log(gameArr)
-  useEffect(() => {
-    if (winner == 'X') {
-      setScore({ ...score, x: score.x + 1 })
-
-    }
-    else if (winner == 'O') {
-      setScore({ ...score, o: score.o + 1 })
-
-    }
-
-
-  }, [winner])
-  localStorage.setItem('score', JSON.stringify(score))
-
-  function generateAllButton() {
-    return new Array(9).fill('')
-
-  }
-
-  function changePlayer(index) {
-    if (winner || gameArr[index]) return;
-    const newArr = [...gameArr]
-    newArr[index] = playComputer?'X':player
-    setGameArr(newArr)
-    setPlayer(player == 'X' ? 'O' : 'X')
-    setCount(count + 1)
-    // Call ComputerMove after a short delay to ensure the state has been updated
-
-  }
-  useEffect(() => {
-    checkWinner(gameArr);
-  }, [gameArr])
-  useEffect(() => {
-    if(winner) return
-    if (winner === null && count > 0) {
-    console.log(winner, count )
-
-      setTimeout(() => {
-       playComputer&&ComputerMove();
-      }, 500); // Delay for the computer's move
-    }
-   
-  }, [count, winner])
-
-
   const winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -72,28 +25,90 @@ function TicTacToe() {
     [2, 4, 6],
   ];
 
-  function checkWinner(dashBoard) {
+  useEffect(() => {
+    if (winner == 'X') {
+      setScore({ ...score, x: score.x + 1 })
 
-    for (const combination of winningCombinations) {
-      const [a, b, c] = combination
+    }
+    else if (winner == 'O') {
+      setScore({ ...score, o: score.o + 1 })
 
-      if (dashBoard[a] && dashBoard[a] == dashBoard[b] && dashBoard[a] == dashBoard[c]) {
-        setWinner(dashBoard[a]);
-        console.log('yes')
+    }
+  }, [winner])
+  localStorage.setItem('score', JSON.stringify(score))
+  useEffect(() => {
+    if (checkWinner(gameArr) == ("X" || 'O')) return
+    if (winner === null && count > 0) {
+      setTimeout(() => {
+        playComputer && ComputerMove();
+      }, 500); // Delay for the computer's move
+    }
 
-      }
-      if (!dashBoard.includes('')) {
-        setWinner('Tie')
-      }
+  }, [count])
+  useEffect(() => {
+    checkWinner(gameArr) && setWinner(checkWinner(gameArr))
+  }, [gameArr])
+
+  //Player move
+  function changePlayer(index) {
+    setCount(count + 1)
+    if (winner || gameArr[index]) return;
+    const newArr = [...gameArr]
+    newArr[index] = playComputer ? 'X' : player
+    setGameArr(newArr)
+    setPlayer(player == 'X' ? 'O' : 'X')
+  }
+
+  //Computer move
+  function ComputerMove() {
+    if (winner) return;
+    else {
+      const emptySpaces = gameArr.map((space, index) => space == '' ? index : null).filter(space => space !== null);
+      const randomNo = Math.floor(Math.random() * emptySpaces.length)
+      if (emptySpaces.length === 0) return;
+      const randomIndex = emptySpaces[randomNo];
+      const ComputerMove = getbestMove(gameArr, 'X', 'O', randomIndex)
+
+      const newArr = [...gameArr]
+      newArr[ComputerMove] = 'O'
+      setGameArr(newArr)
     }
   }
-console.log(winner, "winner-game")
-  const resetGame = () => {
-    setWinner(null)
-    setGameArr(generateAllButton)
-    setPlayer('X')
-    setCount(0)
+  //Get the best possible Move for the computer
+  function getbestMove(gameArr, opponent, computer, randomIndex) {
+    //if computer is about to win
+    for (const [a, b, c] of winningCombinations
+    ) {
+      if (gameArr[b] == computer && gameArr[c] == computer && gameArr[a] == '') return a
+      if (gameArr[a] == computer && gameArr[c] == computer && gameArr[b] == '') return b
+      if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
+
+    }
+    for (const [a, b, c] of winningCombinations) {
+      if (gameArr[a] == opponent && gameArr[b] == opponent && gameArr[c] == '') return c
+      if (gameArr[b] == opponent && gameArr[c] == opponent && gameArr[a] == '') return a
+      if (gameArr[c] == opponent && gameArr[a] == opponent && gameArr[b] == '') return b
+
+    }
+    return randomIndex
   }
+  //Determine the winner
+  function checkWinner(dashBoard) {
+    for (const combination of winningCombinations) {
+      const [a, b, c] = combination
+      if (dashBoard[a] && dashBoard[a] == dashBoard[b] && dashBoard[a] == dashBoard[c]) {
+        // setWinner(dashBoard[a]);
+        return dashBoard[a]
+      }
+      if (!dashBoard.includes('')) {
+        return 'Tie'
+      }
+    }
+    return null
+  }
+
+
+
   const buttonel = gameArr.map((value, index) =>
     <Buttons
       key={index}
@@ -115,42 +130,13 @@ console.log(winner, "winner-game")
       o: 0,
     })
   }
-
-  function ComputerMove() {
-    if(winner) return;
-    else {
-      const emptySpaces = gameArr.map((space, index) => space == '' ? index : null).filter(space => space !== null);
-      const randomNo = Math.floor(Math.random() * emptySpaces.length)
-      if (emptySpaces.length === 0) return;
-      const randomIndex = emptySpaces[randomNo];
-     const ComputerMove= getbestMove(gameArr, 'X', computer,randomIndex)
-  
-      const newArr = [...gameArr]
-      console.log(newArr)
-      newArr[ComputerMove] = 'O'
-      setGameArr(newArr)
-    }
-  
-
+  const resetGame = () => {
+    setWinner(null)
+    setGameArr(new Array(9).fill(''))
+    setPlayer('X')
+    setCount(0)
   }
 
-  function getbestMove(gameArr, opponent, computer,randomIndex) {
-    //if computer is about to win
-    for (const [a, b, c] of winningCombinations
-    ) {
-      if (gameArr[b] == computer && gameArr[c] == computer && gameArr[a] == '') return a
-      if (gameArr[a] == computer && gameArr[c] == computer && gameArr[b] == '') return b
-      if (gameArr[a] == computer && gameArr[b] == computer && gameArr[c] == '') return c
-
-    }
-    for(const [a,b,c] of winningCombinations){
-      if (gameArr[a] == opponent && gameArr[b] == opponent && gameArr[c] == '') return c
-      if (gameArr[b] == opponent && gameArr[c] == opponent && gameArr[a] == '') return a
-      if (gameArr[c] == opponent && gameArr[a] == opponent && gameArr[b] == '') return b
-
-    }
-    return randomIndex
-  }
 
   return (
     <main>
@@ -168,7 +154,7 @@ console.log(winner, "winner-game")
           !winner && <h2 className={player == 'O' ? 'red' : 'green'}><span>Turn:</span>{player}</h2>
         }
         {<span className='reset-game' onClick={resetGame}>Reset Game</span>}
-        {<button className='reset' onClick={()=>setPlayComputer(!playComputer)}>{playComputer?'one player':'Two Players'}</button>}
+        {<button className='reset' onClick={() => setPlayComputer(!playComputer)}>{playComputer ? 'Two players' : 'Play vs Computer'}</button>}
 
 
       </div>
@@ -187,28 +173,6 @@ console.log(winner, "winner-game")
 }
 
 
-export function XOAPP() {
-  return (
-    <TicTacToe />
-  )
-}
-
-
-
-// Meta AI
-/*
-const handleMove = (index) => {
-  if (board[index] !== ' ' || gameOver) return;
-
-  const newBoard = [...board];
-  newBoard[index] = player;
-  setBoard(newBoard);
-
-  checkWinner(newBoard);
-
-  setPlayer(player === 'X' ? 'O' : 'X');
-};
-*/
 
 
 
