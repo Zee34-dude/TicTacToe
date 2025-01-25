@@ -159,7 +159,11 @@ export function TicTacToe() {
 
       </div>
       <div className='flex'>
+        <h5 style={{
+          marginBottom:'5px'
+        }}>Scores</h5>
         <div className='scores'>
+
           <h2 className="xo green">X</h2>
           <h2 className="xo red">O</h2>
           <div className="score">{score.x}</div>
